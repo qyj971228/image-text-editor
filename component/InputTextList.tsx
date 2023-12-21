@@ -1,50 +1,112 @@
-import { useEffect, useState } from 'react'
-import InputTextItem, { InputItem } from './InputTextItem'
+import {
+  CSSProperties,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
+import styles from "./InputTextList.module.css";
 
-export default function InputTextList(props: {
-  list: InputItem[]
-}) {
-  const { list } = props
+export enum Resize {
+  None = "none",
+  Both = "both",
+}
 
-  useEffect(() => {
-    setinputTextList(list)
-  }, [list])
+export interface InputItem {
+  value: string;
+  positionStyle: CSSProperties;
+  resize: Resize.None | Resize.Both;
+}
 
-  const [inputTextList, setinputTextList] = useState<InputItem[]>(list)
+export interface InputTextListExposedMethods {
+  addText: (newInput: InputItem) => void;
+}
 
-  // 文字失去焦点
-  const onHandleInputTextBlur = (
-    event: React.FocusEvent<HTMLInputElement>,
+const InputTextList = forwardRef((props, ref) => {
+  const [inputTextList, setinputTextList] = useState<InputItem[]>([]);
+  const textItemRefs = useRef<Array<HTMLTextAreaElement | null>>([]);
+
+  useImperativeHandle(ref, () => ({
+    // 新增文字元素
+    addText: (newInput: InputItem) => {
+      setinputTextList([...inputTextList, newInput]);
+      setTimeout(() => {
+        textItemRefs.current[textItemRefs.current.length - 1]?.focus(); // 获取焦点
+      }, 0);
+    },
+  }));
+
+  // 输入
+  function onHandleInputTextChange(
+    event: React.ChangeEvent<HTMLTextAreaElement>,
     index: number
-  ) => {
-    if (event.target.value === '') {
-      let list = inputTextList.slice(0, index).concat(inputTextList.slice(index + 1)) // 删除值为空的元素
-      setinputTextList(list)
+  ) {
+    const value = event.target.value;
+    const list = inputTextList.map((el, i) => {
+      if (i === index) {
+        return { ...el, value };
+      }
+      return el;
+    });
+    setinputTextList(list);
+  }
+
+  // 失去焦点
+  function onHandleInputTextBlur(
+    event: React.FocusEvent<HTMLTextAreaElement>,
+    index: number
+  ) {
+    // 当前元素resize角标隐藏
+    const list = inputTextList.map((el, i) => {
+      if (i === index) {
+        return { ...el, resize: Resize.None };
+      } else {
+        return el;
+      }
+    });
+    // 删除值为空的元素
+    if (event.target.value === "") {
+      const newList = list
+        .slice(0, index)
+        .concat(inputTextList.slice(index + 1));
+      setinputTextList(newList);
+    } else {
+      setinputTextList(list);
     }
   }
 
-  // 文字输入
-  const onHandleInputTextChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+  // 获得焦点
+  function onHandleInputTextFocus(
+    event: React.FocusEvent<HTMLTextAreaElement>,
     index: number
-  ) => {
-    const value = event.target.value
+  ) {
+    // 当前元素resize角标显示
     const list = inputTextList.map((el, i) => {
       if (i === index) {
-        return { ...el, value }
+        return { ...el, resize: Resize.Both };
+      } else {
+        return el;
       }
-      return { ...el }
-    })
-    setinputTextList(list)
+    });
+    setinputTextList(list);
   }
 
-  return inputTextList.map((item, index) => (
-    <InputTextItem
-      item={item}
-      index={index}
-      key={index}
-      onChange={onHandleInputTextChange}
-      onBlur={onHandleInputTextBlur}
-    />
-  ))
-}
+  return (
+    <div>
+      {inputTextList.map((item, index) => (
+        <textarea
+          ref={(el) => (textItemRefs.current[index] = el)}
+          className={styles.inputList}
+          value={item.value}
+          key={index}
+          onChange={(e) => onHandleInputTextChange(e, index)}
+          onBlur={(e) => onHandleInputTextBlur(e, index)}
+          onFocus={(e) => onHandleInputTextFocus(e, index)}
+          style={{ ...item.positionStyle, resize: item.resize }}
+        />
+      ))}
+    </div>
+  );
+});
+
+export default InputTextList;

@@ -1,0 +1,29 @@
+.label {
+  width: 800px;
+  height: 800px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #000;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.img {
+  width: 800px;
+}
+
+.fileInput {
+  display: none;
+}
+
+.inputBox {
+  width: 800px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid black;
+  border-radius: 8px;
+}

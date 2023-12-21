@@ -5,5 +5,5 @@
   outline: none;
 }
 .inputList:focus {
-  border: 1px solid red;
+  border: 1px dashed gray;
 }
