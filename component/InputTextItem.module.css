@@ -1,0 +1,9 @@
+.inputList {
+  position: absolute;
+  border: 0;
+  background-color: transparent;
+  outline: none;
+}
+.inputList:focus {
+  border: 1px solid red;
+}
