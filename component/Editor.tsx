@@ -84,6 +84,8 @@ export default function Editor() {
   };
 
   return (
+    // TODO: 工具栏拆分
+    // 图片导出后裁剪，旋转，缩放
     <div>
       <div>
         <button onClick={oppositeDragable}>
