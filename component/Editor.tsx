@@ -1,8 +1,10 @@
 "use client";
-import { useRef, useState } from "react";
+import { ChangeEvent, use, useRef, useState } from "react";
 import styles from "./Editor.module.css";
 import InputTextList, {
-  InputTextListExposedMethods, Resize,
+  InputItem,
+  InputTextListExposedMethods,
+  Resize,
 } from "@/component/InputTextList";
 
 export default function Editor() {
@@ -38,14 +40,70 @@ export default function Editor() {
     const top = rect?.top ?? 0;
     const newInput = {
       value: "",
-      positionStyle: { top: pageY - top, left: pageX - left },
+      positionStyle: {
+        top: pageY - top,
+        left: pageX - left,
+        color: selectedColor,
+        fontSize: inputFontSize + "px",
+        fontWeight: fontBold ? "bold" : "normal",
+        fontFamily: selectedFont,
+      },
       resize: Resize.Both,
-    };
+    } as InputItem;
     inputTextInputRef.current?.addText(newInput);
+  };
+
+  const [dragable, setDragable] = useState<boolean>(false); // 是否可拖拽
+
+  function oppositeDragable() {
+    setDragable(!dragable);
+  }
+
+  const [selectedColor, setSelectedColor] = useState("#000000");
+
+  const onHandleColorChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSelectedColor(event.target.value);
+  };
+
+  const [inputFontSize, setInputFontSize] = useState(16);
+
+  const onHandleFontSizeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setInputFontSize(Number(event.target.value));
+  };
+
+  const [fontBold, setfontBold] = useState<boolean>(false);
+
+  const oppositeFontBold = () => {
+    setfontBold(!fontBold);
+  };
+
+  const [selectedFont, setSelectedFont] = useState("Arial");
+
+  const changeFont = (event: ChangeEvent<HTMLSelectElement>) => {
+    setSelectedFont(event.target.value);
   };
 
   return (
     <div>
+      <div>
+        <button onClick={oppositeDragable}>
+          拖拽：{dragable ? "开" : "关"}
+        </button>
+        <input
+          type="color"
+          value={selectedColor}
+          onChange={onHandleColorChange}
+        />
+        <input type="number" value={inputFontSize} onChange={onHandleFontSizeChange}></input>
+        <button onClick={oppositeFontBold}>
+          粗体：{fontBold ? "开" : "关"}
+        </button>
+        <select value={selectedFont} onChange={changeFont}>
+          <option value="Arial">Arial</option>
+          <option value="Times New Roman">Times New Roman</option>
+          <option value="Courier New">Courier New</option>
+        </select>
+      </div>
       <input
         id="fileInput"
         className={styles.fileInput}
@@ -59,13 +117,17 @@ export default function Editor() {
         </label>
       )}
       {imgSrc && (
-        <div ref={inputBoxRef} className={styles.inputBox}>
+        <div
+          ref={inputBoxRef}
+          className={styles.inputBox}
+          style={{ cursor: dragable ? "grabbing" : "text" }}
+        >
           <img
             className={styles.img}
             src={imgSrc}
             onClick={onHandleImgClick}
           ></img>
-          <InputTextList ref={inputTextInputRef} />
+          <InputTextList dragable={dragable} ref={inputTextInputRef} />
         </div>
       )}
     </div>
