@@ -96,14 +96,15 @@ export default function Editor() {
           value={selectedColor}
           onChange={onHandleColorChange}
         />
-        {/* 字体 */}
-        <span>字体：</span>
+        {/* 字体大小 */}
+        <span>字体大小：</span>
         <input type="number" value={inputFontSize} onChange={onHandleFontSizeChange}></input>
         {/* 粗体开关 */}
         <button onClick={oppositeFontBold}>
           粗体：{fontBold ? "开" : "关"}
         </button>
         {/* 字体选择 */}
+        <span>字体选择</span>
         <select value={selectedFont} onChange={changeFont}>
           <option value="Arial">Arial</option>
           <option value="Times New Roman">Times New Roman</option>
