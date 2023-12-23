@@ -1,6 +1,6 @@
 .label {
-  width: 800px;
-  height: 800px;
+  width: var(--img-width);
+  height: var(--img-width);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -10,7 +10,7 @@
 }
 
 .img {
-  width: 800px;
+  width: var(--img-width);
 }
 
 .fileInput {
@@ -18,7 +18,7 @@
 }
 
 .inputBox {
-  width: 800px;
+  width: var(--img-width);
   position: relative;
   display: flex;
   justify-content: center;

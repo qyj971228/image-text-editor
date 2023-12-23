@@ -9,12 +9,3 @@
   border: 1px solid gray;
   border-radius: 6px;
 }
-
-.textBox {
-  /* border: 10px solid gray; */
-  position: absolute;
-  display: inline-block;
-  box-sizing: content-box;
-  cursor: grabbing;
-  z-index: 0;
-}
